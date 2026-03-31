@@ -28,13 +28,13 @@ bar12c=ar.rolling.window(Y,nprev,1,12,type="bic")
 
 ### == juntando tudo ==  ###
 
-bcpi=cbind(bar1c$pred,bar2c$pred,bar3c$pred,bar4c$pred,
+forecast=cbind(bar1c$pred,bar2c$pred,bar3c$pred,bar4c$pred,
            bar5c$pred,bar6c$pred,bar7c$pred,bar8c$pred,
            bar9c$pred,bar10c$pred,bar11c$pred,bar12c$pred)
 
 
-bcpi = accumulate_model(bcpi)
+forecast = accumulate_model(forecast)
 
 ##
 
-write.table(bcpi,"forecasts/ar/bicar-cpi1.csv",sep=";",row.names = FALSE, col.names = FALSE)
+save(forecast,file="forecasts-samples/ar/bicar-cpi1.rda")
