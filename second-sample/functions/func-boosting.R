@@ -2,7 +2,7 @@
 
 runboost=function(Y,indice,lag){
   
-  dum=Y[1:(nrow(y)-lag+1),ncol(Y)]
+  dum=Y[1:(nrow(Y)-lag+1),ncol(Y)]
   Y=Y[,-ncol(Y)]
   comp=princomp(scale(Y,scale=FALSE))
   Y2=cbind(Y,comp$scores[,1:4])
