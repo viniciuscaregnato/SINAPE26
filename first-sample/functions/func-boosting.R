@@ -47,7 +47,7 @@ boosting.rolling.window=function(Y,nprev,indice=1,lag=1){
   mae=mean(abs(tail(real,nprev)-save.pred))
   errors=c("rmse"=rmse,"mae"=mae)
   
-  return(list("pred"=save.pred,,"errors"=errors))
+  return(list("pred"=save.pred,"errors"=errors))
 }
 
 accumulate_model = function(forecasts){
