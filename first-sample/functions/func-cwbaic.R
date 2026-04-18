@@ -23,7 +23,7 @@ runcwbaic=function(Y,indice,lag, type = "aic"){
     offset = 0,
     center = TRUE,
     control = boost_control(
-      mstop = 100,
+      mstop = 500,
       nu = 0.1
     )
 )
