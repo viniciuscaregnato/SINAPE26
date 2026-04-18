@@ -32,7 +32,7 @@ runcwbaic=function(Y,indice,lag, type = "aic"){
   if (type == "aic") { 
     aic_obj <- AIC(best_fit)
     m_opt <- mstop(aic_obj)
-    cat("M_opt selecionado:", m_opt, "de um máximo de 100\n") 
+    cat("M_opt selecionado:", m_opt, "de 500 \n") 
     
     model <- best_fit[m_opt] 
   }
