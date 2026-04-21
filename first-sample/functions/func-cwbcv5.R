@@ -49,6 +49,7 @@ runcwbcv5=function(Y,indice,lag, type = "cv5"){
     cvm <- cvrisk(best_fit, folds = cv5f, papply = lapply)
     m_opt <- mstop(cvm)
     model <- best_fit[m_opt] 
+    cat("Optimal number of boosting iterations:",m_opt,"\n" )
   }
   
   if (type == "cv10") {
@@ -56,6 +57,7 @@ runcwbcv5=function(Y,indice,lag, type = "cv5"){
     cvm <- cvrisk(best_fit, folds = cv5f, papply = lapply)
     m_opt <- mstop(cvm)
     model <- best_fit[m_opt] 
+    cat("Optimal number of boosting iterations:",m_opt,"\n" )
   }
   
   
