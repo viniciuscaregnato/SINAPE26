@@ -1,3 +1,4 @@
+source("second-sample/functions/func-lasso.R")
 library(HDeconometrics)
 load("second-sample/data/rawdata.RData")
 Y=dados
