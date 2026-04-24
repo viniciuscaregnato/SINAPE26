@@ -32,4 +32,4 @@ forecast=cbind(gbm_default1c$pred,gbm_default2c$pred,gbm_default3c$pred,gbm_defa
 forecast = accumulate_model(forecast)
 
 
-save(forecast,file="forecasts-samples/gbm/gbm-cpi1.rda")
+save(forecast,file="forecasts-samples/gbm_default/gbm_default-cpi1.rda")
