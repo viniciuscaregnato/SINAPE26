@@ -31,7 +31,7 @@ forecasts=cbind(factorboosting1c$pred,factorboosting2c$pred,factorboosting3c$pre
           factorboosting5c$pred,factorboosting6c$pred,factorboosting7c$pred,factorboosting8c$pred,
           factorboosting9c$pred,factorboosting10c$pred,factorboosting11c$pred,factorboosting12c$pred)
 
-forecasts = accumulate_model(forecasts)
+forecast = accumulate_model(forecasts)
 
 
 save(forecast,file="forecasts-samples/factorboosting/factor_boosting-cpi2.rda")
