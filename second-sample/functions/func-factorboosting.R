@@ -1,6 +1,6 @@
 runfactorboosting=function(Y,indice,lag){
   
-  dum=Y[1:(nrow(y)-lag+1),ncol(Y)]
+  dum=Y[1:(nrow(Y)-lag+1),ncol(Y)]
   Y=Y[,-ncol(Y)]
   
   comp=princomp(scale(Y,scale=FALSE))
@@ -25,7 +25,7 @@ runfactorboosting=function(Y,indice,lag){
     X2=X
   }
   
-  model=boosting(y,X2,v=0.2,display=FALSE)
+  model=HDeconometricsBeta::boosting(y,X2,v=0.2,display=FALSE)
   
   
   if(sum(dum)==1){
