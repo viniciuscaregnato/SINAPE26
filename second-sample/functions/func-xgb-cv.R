@@ -139,119 +139,13 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   save.pred=matrix(NA,nprev,1)
   
   
-  # save.pred_intervals = matrix(NA,nprev,2)
-  
-  # save.geweke_bart_testpreds = matrix(NA,nprev,1)
-  # save.geweke_bart_sigma = matrix(NA,nprev,1)
-  
-  # i <- nprev
-  
-  #code for parallelization
-  
-  
-  
-  
-  #for(i in nprev:1){
-  myfunction <- function(i) {
-    library(xgboost)
+  for(i in 1:nprev){
+    cat("Iteração", i, "de", nprev, "\n")  # mostra progresso
     
-    res_temp <- list()
-    
-    Y.window=Y[(1+nprev-i):(nrow(Y)-i),]
-    #cvinal medeiros et al. code uses "lasso" here to refer to all models
-    
-    # print("line 149")
-    lasso=runxgb_cv(Y.window,indice,lag)
-    
-    # print("line 152")
-    
-    
-    
-    #SAVE PREDICTIONS
-    #this should be included for all methods
-    res_temp$save.pred=lasso$pred
-    
-    #SAVE PREDICTION INTERVALS
-    #not all methods include prediciton intervals
-    #ensure that all prediction intervals are saved in the same format for all methods
-    # res_temp$save.pred_intervals=lasso$pred_intervals
-    
-    
-    #SAVE MCMC DIAGNOSTICS
-    #onlyapplicable to methods that use MCMC
-    
-    # res_temp$save.geweke_bart_testpreds=lasso$geweke_bart_testpreds
-    # res_temp$save.geweke_bart_sigma=lasso$geweke_bart_sigma
-    
-    
-    #SAVE VARIABLE IMPORTANCE RESULTS
-    #Note: This is specific to the methods
-    #Different methods have different variable importance measures
-    #some methods have no variable importance measures
-    #some methods have more than one variable importance measure
-    
-    # temp_varcounts <- lasso$model$varcount
-    #BART variable inclusion probabilities as defined by Chipman et al
-    #For each sum-of-tree model, obtain the proportions of splits for each variable
-    #then average this across mcmc draws of sum-of-tree models
-    
-    # res_temp$save.importance =colMeans((temp_varcounts/rowSums(temp_varcounts)))
-    
-    #the posterior inclusion probabilities are averages across model draws of 
-    #indicators for whether the variable was used for any splits in the sum-of-tree model
-    # res_temp$save.pip = colMeans(1*(temp_varcounts>0))
-    
-    #cat("iteration",(1+nprev-i),"\n")
-    
-    
-    return(res_temp)
-    
-    
+    Y.window = Y[(1+nprev-i):(nrow(Y)-i), ]
+    lasso = runxgb_cv(Y.window, indice, lag)
+    save.pred[(1+nprev-i), ] = lasso$pred
   }
-  
-  
-  
-  no_cores <- detectCores(logical = TRUE)  # returns the number of available hardware threads, and if it is FALSE, returns the number of physical cores
-  
-  cl <- makeCluster(no_cores-1)
-  clusterSetRNGStream(cl = cl, iseed = 123)
-  
-  clusterExport(cl,c('myfunction',
-                     'nprev',
-                     'indice',
-                     'lag',
-                     'Y',
-                     'runxgb_cv'
-  ),
-  envir = environment()
-  )
-  
-  #registerDoParallel(cl)
-  
-  
-  # start.time <- Sys.time()
-  
-  res_list <- parallel::parLapply(cl = cl, 1:nprev, fun = myfunction)
-  
-  stopCluster(cl)
-  
-  # end.time <- Sys.time()
-  # time.taken <- end.time - start.time
-  # time.taken
-  
-  for (i in nprev:1){
-    
-    save.pred[(1+nprev-i),]=res_list[[i]]$save.pred
-    # save.pred_intervals[(1+nprev-i),]=res_list[[i]]$save.pred_intervals
-    # save.geweke_bart_testpreds[(1+nprev-i),]=res_list[[i]]$save.geweke_bart_testpreds
-    # save.geweke_bart_sigma[(1+nprev-i),]=res_list[[i]]$save.geweke_bart_sigma
-    # save.importance[[i]] =res_list[[i]]$save.importance
-    # save.pip[[i]] = res_list[[i]]$save.pip
-    
-    
-  }
-  
-  
   
   
   real=Y[,indice]
@@ -333,22 +227,3 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   
 }
 
-
-accumulate_model = function(forecasts){
-  
-  acc3 = c(rep(NA,2),sapply(1:(nrow(forecasts)-2), function(x){
-    prod(1+diag(forecasts[x:(x+2),1:3]))-1
-  })) 
-  acc6 = c(rep(NA,5),sapply(1:(nrow(forecasts)-5), function(x){
-    prod(1+diag(forecasts[x:(x+5),1:6]))-1
-  }))
-  acc12 = c(rep(NA,11),sapply(1:(nrow(forecasts)-11), function(x){
-    prod(1+diag(forecasts[x:(x+11),1:12]))-1
-  }))
-  
-  forecasts = cbind(forecasts,acc3,acc6,acc12)
-  colnames(forecasts) = c(paste("t+",1:12,sep = ""),"acc3","acc6","acc12")
-  
-  return(forecasts)
-  
-}
