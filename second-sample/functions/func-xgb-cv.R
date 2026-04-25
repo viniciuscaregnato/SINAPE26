@@ -57,7 +57,15 @@ runxgb_cv=function(Y,indice,lag){
                    verbose = F, early_stopping_rounds = 8, maximize = FALSE)
     
     min_rmse_index  <-  mdcv$best_iteration
+    
+    # --- adicionar essa verificação ---
+    if (is.null(min_rmse_index) || min_rmse_index == 0) next
+    
+    
     min_rmse <-  mdcv$evaluation_log[min_rmse_index]$test_rmse_mean
+    
+    # --- e essa também ---
+    if (is.null(min_rmse) || length(min_rmse) == 0) next
     
     if (min_rmse < best_rmse) {
       best_rmse <- min_rmse
@@ -150,80 +158,12 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   
   real=Y[,indice]
   
-  #these lines seem pointless, commenting out
-  # plot(real,type="l")
-  # lines(c(rep(NA,length(real)-nprev),save.pred),col="red")
-  
-  rmse=sqrt(mean((tail(real,nprev)-save.pred)^2))
-  mae=mean(abs(tail(real,nprev)-save.pred))
-  
-  #median absolute deviation from the median in paper, but not in code
-  mad = median(abs(tail(real,nprev)-save.pred - median(tail(real,nprev)-save.pred)))
-  
-  #mean absolute deviation from  he mean
-  mean_ad = mean(abs(tail(real,nprev)-save.pred - mean(tail(real,nprev)-save.pred)))
-  
-  
-  #mean relative absolute error (relative to random walk)
-  #last 132 lagged one month values are
-  #real[(nrow(dados)-nprev):(nrow(dados)-1)]
-  mrae = mean(abs( (tail(real,nprev)-save.pred)/
-                     (tail(real,nprev)-real[(nrow(dados)-nprev):(nrow(dados)-1)]  )     ))
-  
-  #mean absolute scaled error
-  #equivalent to mae of method divided by nae of naive forecast
-  #first calculate the denomiator
-  #mean of vector of length nprev-1
-  tempdenom = mean( abs(tail(real,nprev-1) - real[(nrow(dados)-nprev+1):(nrow(dados)-1)]  ) )
-  #then the overall measure is
-  mase=mae/tempdenom
-  
-  #mean absolute percentage error
-  mape = (100/nprev)*mean(abs((tail(real,nprev)-save.pred)/tail(real,nprev)))
-  
-  #normalized rmse
-  nrmse = rmse/(max(tail(real,nprev))-min(tail(real,nprev)))
-  
-  #rmse relative to random walk
-  
-  #rmse of naive rw forecast
-  rwrmse=sqrt(mean((tail(real,nprev)-real[(nrow(dados)-nprev):(nrow(dados)-1)])^2))
-  
-  rmse_rel_rw = rmse/rwrmse
-  
-  
-  errors=c("rmse"=rmse,
-           "mae"=mae,
-           "mad"=mad,
-           "mean_ad"=mean_ad,
-           "mrae"=mrae,
-           "mase"=mase,
-           "mape"=mape,
-           "nrmse"=nrmse,
-           "rmse_rel_rw"=rmse_rel_rw)
-  
-  #mean prediction interval coverage
-  # predint_cov = mean( 1*((save.pred_intervals[,1] < tail(real,nprev))  & (tail(real,nprev) < save.pred_intervals[,2])   ))
-  
-  #mean prediction interval width
-  # predint_width = mean(save.pred_intervals[,2] - save.pred_intervals[,1])
   
   
   
   
   
-  
-  
-  return(list("pred"= save.pred,
-              "errors"= errors#,
-              # "save.pred_intervals"= save.pred_intervals,
-              #"save.geweke_bart_testpreds"= save.geweke_bart_testpreds,
-              #"save.geweke_bart_sigma"= save.geweke_bart_sigma,
-              # "save.importance"= save.importance,
-              # "save.pip"= save.pip#,
-              # "predint_cov"= predint_cov,
-              # "predint_width"= predint_width
-  ))
+  return(list("pred"= save.pred))
   
 }
 
