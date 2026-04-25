@@ -211,9 +211,9 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   
   
   
-  #no_cores <- detectCores(logical = TRUE)  # returns the number of available hardware threads, and if it is FALSE, returns the number of physical cores
+  no_cores <- detectCores(logical = TRUE)  # returns the number of available hardware threads, and if it is FALSE, returns the number of physical cores
   
-  cl <- makeCluster(120)
+  cl <- makeCluster(no_cores-1)
   clusterSetRNGStream(cl = cl, iseed = 123)
   
   clusterExport(cl,c('myfunction',
