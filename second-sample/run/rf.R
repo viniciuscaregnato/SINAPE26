@@ -37,5 +37,5 @@ forecast=accumulate_model(forecast)
 
 
 ##
-save(forecast, file = "forecasts-samples/ar/bicar-cpi2.rda") #corrigir isso
+
 save(forecast, file = "forecasts-samples/rf/rf2-cpi2.rda")
