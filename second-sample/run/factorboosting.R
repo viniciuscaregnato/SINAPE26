@@ -1,6 +1,6 @@
 source("second-sample/functions/func-factorboosting.R")
 library(HDeconometrics)
-load("first-sample/data/rawdata.rda")
+load("second-sample/data/rawdata.rda")
 Y=dados
 dum=rep(0,nrow(Y))
 dum[which.min(Y[,1])]=1
