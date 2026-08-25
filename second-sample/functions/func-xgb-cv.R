@@ -22,10 +22,10 @@ runxgb_cv=function(Y,indice,lag){
   }
   
   X.out=tail(aux,1)[,1:ncol(X), drop= FALSE] # y = y[1:(length(y)-lag+1)]
-      dum=tail(dum,length(y)); X = cbind(X,dum); X.out = cbind(X.out,0); colnames(X.out)= NULL; colnames(X) = NULL #  X = X[1:(nrow(X)-lag+1),]
+  dum=tail(dum,length(y)); X = cbind(X,dum); X.out = cbind(X.out,0); colnames(X.out)= NULL; colnames(X) = NULL #  X = X[1:(nrow(X)-lag+1),]
   
   # print("line 24")
-
+  
   
   
   dtrain <- xgb.DMatrix(X, label = y)
@@ -56,8 +56,8 @@ runxgb_cv=function(Y,indice,lag){
                    nfold = cv.nfold, nrounds = cv.nround,
                    verbose = F, early_stopping_rounds = 8, maximize = FALSE)
     
-    min_rmse_index  <-  mdcv$best_iteration
-    min_rmse <-  mdcv$evaluation_log[min_rmse_index]$test_rmse_mean
+    min_rmse_index  <-  which.min(mdcv$evaluation_log$test_rmse_mean)
+    min_rmse <-  mdcv$evaluation_log$test_rmse_mean[min_rmse_index]
     
     if (min_rmse < best_rmse) {
       best_rmse <- min_rmse
@@ -70,7 +70,7 @@ runxgb_cv=function(Y,indice,lag){
   # The best index (min_rmse_index) is the best "nround" in the model
   nround = best_rmse_index
   set.seed(best_seednumber)
-  xg_mod <- xgboost(data = dtrain, params = best_param, nround = nround, verbose = F)
+  xg_mod <- xgb.train(data = dtrain, params = best_param, nround = nround, verbose = F)
   
   
   
@@ -123,11 +123,11 @@ runxgb_cv=function(Y,indice,lag){
   
   
   return(list(#"model"= model,
-              "pred"= pred
-              # "pred_intervals" = pred_intervals#,
-              # "geweke_bart_testpreds"= geweke_bart_testpreds,
-              # "geweke_bart_sigma" = geweke_bart_sigma
-              ))
+    "pred"= pred
+    # "pred_intervals" = pred_intervals#,
+    # "geweke_bart_testpreds"= geweke_bart_testpreds,
+    # "geweke_bart_sigma" = geweke_bart_sigma
+  ))
 }
 
 
@@ -217,14 +217,14 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   clusterSetRNGStream(cl = cl, iseed = 123)
   
   clusterExport(cl,c('myfunction',
-                        'nprev',
-                        'indice',
-                        'lag',
-                        'Y',
-                        'runxgb_cv'
-                        ),
-                envir = environment()
-                )
+                     'nprev',
+                     'indice',
+                     'lag',
+                     'Y',
+                     'runxgb_cv'
+  ),
+  envir = environment()
+  )
   
   #registerDoParallel(cl)
   
@@ -268,13 +268,13 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   
   #mean absolute deviation from  he mean
   mean_ad = mean(abs(tail(real,nprev)-save.pred - mean(tail(real,nprev)-save.pred)))
-
+  
   
   #mean relative absolute error (relative to random walk)
   #last 132 lagged one month values are
   #real[(nrow(dados)-nprev):(nrow(dados)-1)]
   mrae = mean(abs( (tail(real,nprev)-save.pred)/
-                        (tail(real,nprev)-real[(nrow(dados)-nprev):(nrow(dados)-1)]  )     ))
+                     (tail(real,nprev)-real[(nrow(dados)-nprev):(nrow(dados)-1)]  )     ))
   
   #mean absolute scaled error
   #equivalent to mae of method divided by nae of naive forecast
@@ -316,7 +316,7 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
   
   
   
-
+  
   
   
   
@@ -329,7 +329,7 @@ xgb_cv.rolling.window=function(Y,nprev,indice=1,lag=1){
               # "save.pip"= save.pip#,
               # "predint_cov"= predint_cov,
               # "predint_width"= predint_width
-              ))
+  ))
   
 }
 
